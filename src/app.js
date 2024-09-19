@@ -9,7 +9,6 @@ import passport from "passport";
 import path from "path";
 import requestIp from "request-ip";
 import { Server } from "socket.io";
-import swaggerUi from "swagger-ui-express";
 import { fileURLToPath } from "url";
 import YAML from "yaml";
 import { DB_NAME } from "./constants.js";
@@ -111,7 +110,7 @@ import requestinspectionRouter from "./routes/kitchen-sink/requestinspection.rou
 import responseinspectionRouter from "./routes/kitchen-sink/responseinspection.routes.js";
 import statuscodeRouter from "./routes/kitchen-sink/statuscode.routes.js";
 
-
+import { avoidInProduction } from "./middlewares/auth.middlewares.js";
 // * healthcheck
 app.use("/api/v1/healthcheck", healthcheckRouter);
 
@@ -171,18 +170,8 @@ app.delete("/api/v1/reset-db", avoidInProduction, async (req, res) => {
   throw new ApiError(500, "Something went wrong while dropping the database");
 });
 
-// * API DOCS
-// ? Keeping swagger code at the end so that we can load swagger on "/" route
-app.use(
-  "/",
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerDocument, {
-    swaggerOptions: {
-      docExpansion: "none", // keep all the sections collapsed by default
-    },
-    customSiteTitle: "FreeAPI docs",
-  })
-);
+
+
 
 // common error handling middleware
 app.use(errorHandler);
